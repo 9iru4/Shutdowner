@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 
@@ -97,62 +98,48 @@ namespace Shutdowner
             Hours1ButtonDown.Background = new SolidColorBrush(color);
             Hours2ButtonUp.Background = new SolidColorBrush(color);
             Hours2ButtonDown.Background = new SolidColorBrush(color);
+
+            TaskTypeButton.Background = new SolidColorBrush(color);
         }
 
         void HideUpDownButtons()
         {
-            Seconds1ButtonUp.Visibility = System.Windows.Visibility.Hidden;
-            Seconds1ButtonDown.Visibility = System.Windows.Visibility.Hidden;
-            Seconds2ButtonUp.Visibility = System.Windows.Visibility.Hidden;
-            Seconds2ButtonDown.Visibility = System.Windows.Visibility.Hidden;
+            Seconds1ButtonUp.Visibility = Visibility.Hidden;
+            Seconds1ButtonDown.Visibility = Visibility.Hidden;
+            Seconds2ButtonUp.Visibility = Visibility.Hidden;
+            Seconds2ButtonDown.Visibility = Visibility.Hidden;
 
-            Minutes1ButtonUp.Visibility = System.Windows.Visibility.Hidden;
-            Minutes1ButtonDown.Visibility = System.Windows.Visibility.Hidden;
-            Minutes2ButtonUp.Visibility = System.Windows.Visibility.Hidden;
-            Minutes2ButtonDown.Visibility = System.Windows.Visibility.Hidden;
+            Minutes1ButtonUp.Visibility = Visibility.Hidden;
+            Minutes1ButtonDown.Visibility = Visibility.Hidden;
+            Minutes2ButtonUp.Visibility = Visibility.Hidden;
+            Minutes2ButtonDown.Visibility = Visibility.Hidden;
 
-            Hours1ButtonUp.Visibility = System.Windows.Visibility.Hidden;
-            Hours1ButtonDown.Visibility = System.Windows.Visibility.Hidden;
-            Hours2ButtonUp.Visibility = System.Windows.Visibility.Hidden;
-            Hours2ButtonDown.Visibility = System.Windows.Visibility.Hidden;
+            Hours1ButtonUp.Visibility = Visibility.Hidden;
+            Hours1ButtonDown.Visibility = Visibility.Hidden;
+            Hours2ButtonUp.Visibility = Visibility.Hidden;
+            Hours2ButtonDown.Visibility = Visibility.Hidden;
+
+            TaskTypeButton.Visibility = Visibility.Hidden;
         }
 
         void ShowUpDownButons()
         {
-            Seconds1ButtonUp.Visibility = System.Windows.Visibility.Visible;
-            Seconds1ButtonDown.Visibility = System.Windows.Visibility.Visible;
-            Seconds2ButtonUp.Visibility = System.Windows.Visibility.Visible;
-            Seconds2ButtonDown.Visibility = System.Windows.Visibility.Visible;
+            Seconds1ButtonUp.Visibility = Visibility.Visible;
+            Seconds1ButtonDown.Visibility = Visibility.Visible;
+            Seconds2ButtonUp.Visibility = Visibility.Visible;
+            Seconds2ButtonDown.Visibility = Visibility.Visible;
 
-            Minutes1ButtonUp.Visibility = System.Windows.Visibility.Visible;
-            Minutes1ButtonDown.Visibility = System.Windows.Visibility.Visible;
-            Minutes2ButtonUp.Visibility = System.Windows.Visibility.Visible;
-            Minutes2ButtonDown.Visibility = System.Windows.Visibility.Visible;
+            Minutes1ButtonUp.Visibility = Visibility.Visible;
+            Minutes1ButtonDown.Visibility = Visibility.Visible;
+            Minutes2ButtonUp.Visibility = Visibility.Visible;
+            Minutes2ButtonDown.Visibility = Visibility.Visible;
 
-            Hours1ButtonUp.Visibility = System.Windows.Visibility.Visible;
-            Hours1ButtonDown.Visibility = System.Windows.Visibility.Visible;
-            Hours2ButtonUp.Visibility = System.Windows.Visibility.Visible;
-            Hours2ButtonDown.Visibility = System.Windows.Visibility.Visible;
-        }
+            Hours1ButtonUp.Visibility = Visibility.Visible;
+            Hours1ButtonDown.Visibility = Visibility.Visible;
+            Hours2ButtonUp.Visibility = Visibility.Visible;
+            Hours2ButtonDown.Visibility = Visibility.Visible;
 
-        bool IsScheduledAction()
-        {
-            var logs = EventLog.GetEventLogs()[6].Entries;
-
-            for (int i = logs.Count - 1; i > 0; i--)
-            {
-                var log = logs[i];
-                if ((log.TimeGenerated - DateTime.Now).TotalDays > 3) return false;
-                if (log.EventID == 1074)
-                    return true;
-                if (log.EventID == 1075)
-                    return false;
-
-                if (log.EventID == 7002)
-                    return false;
-            }
-
-            return false;
+            TaskTypeButton.Visibility = Visibility.Visible;
         }
 
         void AbortShutdown()
@@ -198,22 +185,24 @@ namespace Shutdowner
 
         private void StartButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (StartButton.Content.ToString() == "пуск")
-            {
-                StartButton.Content = "стоп";
-                HideUpDownButtons();
-                StartButton.Background = new SolidColorBrush(Colors.Red);
-                timer.StartTimer(GetSeconds());
-                CreateNewTaskAtTime("Запланированное выключение", "shutdown.exe", "/s /t 1000", DateTime.Now.AddSeconds(GetSeconds() + 1));
+            if (GetSeconds() > 0)
+                if (StartButton.Content.ToString() == "пуск")
+                {
+                    StartButton.Content = "стоп";
+                    HideUpDownButtons();
+                    StartButton.Background = new SolidColorBrush(Colors.Red);
+                    timer.StartTimer(GetSeconds());
+                    CreateNewTaskAtTime("Запланированное выключение", "shutdown.exe", "/s /t 1000", DateTime.Now.AddSeconds(GetSeconds() + 1));
 
-            }
-            else
-            {
-                StartButton.Content = "пуск";
-                ShowUpDownButons();
-                StartButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
-                timer.StopTimer();
-            }
+                }
+                else
+                {
+                    StartButton.Content = "пуск";
+                    ShowUpDownButons();
+                    StartButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
+                    timer.StopTimer();
+                }
+            else MessageBox.Show("установите таймер");
         }
 
         private void Seconds2ButtonDown_Click(object sender, System.Windows.RoutedEventArgs e)

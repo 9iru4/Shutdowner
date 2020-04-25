@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         ResizeMode="CanMinimize"
         ShowIconOnTitleBar="True"
         mc:Ignorable="d"
@@ -40,30 +41,39 @@
     <Grid x:Name="MainGrid">
 
         <TabControl HorizontalAlignment="Left" Height="270" VerticalAlignment="Top" Width="494" Margin="0,0,-0.4,0">
-            <TabItem Header="TabItem">
+            <TabItem Header="Запустить задание">
                 <Grid>
-                    <Button Content="пуск" Name="StartButton" HorizontalAlignment="Left" Margin="210,196,0,0" VerticalAlignment="Top" Width="76" Style="{DynamicResource SquareButtonStyle}" Background="Red" Click="StartButton_Click"/>
+                    <Button Content="пуск" Name="StartButton" HorizontalAlignment="Left" Margin="210,182,0,0" VerticalAlignment="Top" Width="76" Style="{DynamicResource SquareButtonStyle}" Background="White" Click="StartButton_Click"/>
 
-                    <TextBlock x:Name="Hours1"  FontSize="72" HorizontalAlignment="Left" Text="0" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="40" Height="105" Margin="88,36,0,0"/>
-                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Hours1ButtonUp" FontSize="10" Content="5" VerticalAlignment="Center" Height="24" BorderThickness="0" Background="Transparent" Margin="98,37,372.4,162" Click="Hours1ButtonUp_Click"/>
-                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Hours1ButtonDown" FontSize="10" Content="6" BorderThickness="0" Background="Transparent" RenderTransformOrigin="1.548,1.332" Click="Hours1ButtonDown_Click" Margin="98,115,372.4,84"/>
-                    <TextBlock x:Name="Hours2"  FontSize="72" HorizontalAlignment="Left" Text="0" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="40" Height="105" Margin="138,36,0,0"/>
-                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Hours2ButtonUp" FontSize="10" Content="5" VerticalAlignment="Center" Height="24" BorderThickness="0" Background="Transparent" Margin="148,37,324.4,162" Click="Hours2ButtonUp_Click"/>
-                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Hours2ButtonDown" FontSize="10" Content="6" BorderThickness="0" Height="25" Background="Transparent" RenderTransformOrigin="1.548,1.332" Margin="148,115,324.4,84" Click="Hours2ButtonDown_Click"/>
-                    <TextBlock x:Name="Divide1"  FontSize="72" HorizontalAlignment="Left" Text=":" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="15" Height="105" Margin="183,36,0,0"/>
-                    <TextBlock x:Name="Minutes1"  FontSize="72" HorizontalAlignment="Left" Text="0" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="40" Height="105" Margin="203,36,0,0"/>
-                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Minutes1ButtonUp" FontSize="10" Content="5" VerticalAlignment="Center" Height="24" BorderThickness="0" Background="Transparent" Margin="214,37,258.4,162" Click="Minutes1ButtonUp_Click"/>
-                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Minutes1ButtonDown" FontSize="10" Content="6" BorderThickness="0" Height="25" Background="Transparent" RenderTransformOrigin="1.548,1.332" Margin="214,115,258.4,84" Click="Minutes1ButtonDown_Click"/>
-                    <TextBlock x:Name="Minutes2"  FontSize="72" HorizontalAlignment="Left" Text="0" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="40" Height="105" Margin="253,36,0,0"/>
-                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Minutes2ButtonUp" FontSize="10" Content="5" VerticalAlignment="Center" Height="24" BorderThickness="0" Background="Transparent" Margin="263,37,209.4,162" Click="Minutes2ButtonUp_Click"/>
-                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Minutes2ButtonDown" FontSize="10" Content="6" BorderThickness="0" Height="25" Background="Transparent" RenderTransformOrigin="1.548,1.332" Margin="263,115,209.4,84" Click="Minutes2ButtonDown_Click"/>
-                    <TextBlock x:Name="Divide2"  FontSize="72" HorizontalAlignment="Left" Text=":" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="15" Height="105" Margin="298,36,0,0"/>
-                    <TextBlock x:Name="Seconds1"  FontSize="72" HorizontalAlignment="Left" Text="0" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="40" Height="105" Margin="318,36,0,0"/>
-                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Seconds1ButtonUp" FontSize="10" Content="5" VerticalAlignment="Center" Height="24" BorderThickness="0" Background="Transparent" Margin="329,37,143.4,162" Click="Seconds1ButtonUp_Click"/>
-                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Seconds1ButtonDown" FontSize="10" Content="6" BorderThickness="0" Background="Transparent" RenderTransformOrigin="1.548,1.332"  Click="Seconds1ButtonDown_Click" Margin="329,115,143.4,84"/>
-                    <TextBlock x:Name="Seconds2"  FontSize="72" HorizontalAlignment="Left" Text="0" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="40" Height="105" Margin="368,36,0,0"/>
-                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Seconds2ButtonUp" FontSize="10" Content="5" VerticalAlignment="Center" Height="24" BorderThickness="0" Background="Transparent" Margin="377,37,95.4,162" Click="Seconds2ButtonUp_Click"/>
-                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Seconds2ButtonDown" FontSize="10" Content="6" BorderThickness="0" Height="25" Background="Transparent" RenderTransformOrigin="1.548,1.332" Margin="377,115,95.4,84" Click="Seconds2ButtonDown_Click"/>
+                    <TextBlock x:Name="Hours1"  FontSize="72" HorizontalAlignment="Left" Text="0" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="40" Height="105" Margin="88,56,0,0"/>
+                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Hours1ButtonUp" FontSize="10" Content="5" VerticalAlignment="Center" Height="24" BorderThickness="0" Background="Transparent" Margin="98,57,372.4,142" Click="Hours1ButtonUp_Click"/>
+                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Hours1ButtonDown" FontSize="10" Content="6" BorderThickness="0" Background="Transparent" RenderTransformOrigin="1.548,1.332" Click="Hours1ButtonDown_Click" Margin="98,135,372.4,64"/>
+                    <TextBlock x:Name="Hours2"  FontSize="72" HorizontalAlignment="Left" Text="0" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="40" Height="105" Margin="138,56,0,0"/>
+                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Hours2ButtonUp" FontSize="10" Content="5" VerticalAlignment="Center" Height="24" BorderThickness="0" Background="Transparent" Margin="148,57,324.4,142" Click="Hours2ButtonUp_Click"/>
+                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Hours2ButtonDown" FontSize="10" Content="6" BorderThickness="0" Height="25" Background="Transparent" RenderTransformOrigin="1.548,1.332" Margin="148,135,324.4,64" Click="Hours2ButtonDown_Click"/>
+                    <TextBlock x:Name="Divide1"  FontSize="72" HorizontalAlignment="Left" Text=":" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="15" Height="105" Margin="183,51,0,0"/>
+                    <TextBlock x:Name="Minutes1"  FontSize="72" HorizontalAlignment="Left" Text="0" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="40" Height="105" Margin="203,56,0,0"/>
+                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Minutes1ButtonUp" FontSize="10" Content="5" VerticalAlignment="Center" Height="24" BorderThickness="0" Background="Transparent" Margin="213,57,259.4,142" Click="Minutes1ButtonUp_Click"/>
+                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Minutes1ButtonDown" FontSize="10" Content="6" BorderThickness="0" Height="25" Background="Transparent" RenderTransformOrigin="1.548,1.332" Margin="213,135,259.4,64" Click="Minutes1ButtonDown_Click"/>
+                    <TextBlock x:Name="Minutes2"  FontSize="72" HorizontalAlignment="Left" Text="0" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="40" Height="105" Margin="253,56,0,0"/>
+                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Minutes2ButtonUp" FontSize="10" Content="5" VerticalAlignment="Center" Height="24" BorderThickness="0" Background="Transparent" Margin="263,57,209.4,142" Click="Minutes2ButtonUp_Click"/>
+                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Minutes2ButtonDown" FontSize="10" Content="6" BorderThickness="0" Height="25" Background="Transparent" RenderTransformOrigin="1.548,1.332" Margin="263,135,209.4,64" Click="Minutes2ButtonDown_Click"/>
+                    <TextBlock x:Name="Divide2"  FontSize="72" HorizontalAlignment="Left" Text=":" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="15" Height="105" Margin="298,51,0,0"/>
+                    <TextBlock x:Name="Seconds1"  FontSize="72" HorizontalAlignment="Left" Text="0" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="40" Height="105" Margin="318,56,0,0"/>
+                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Seconds1ButtonUp" FontSize="10" Content="5" VerticalAlignment="Center" Height="24" BorderThickness="0" Background="Transparent" Margin="328,57,144.4,142" Click="Seconds1ButtonUp_Click"/>
+                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Seconds1ButtonDown" FontSize="10" Content="6" BorderThickness="0" Background="Transparent" RenderTransformOrigin="1.548,1.332"  Click="Seconds1ButtonDown_Click" Margin="328,135,144.4,64"/>
+                    <TextBlock x:Name="Seconds2"  FontSize="72" HorizontalAlignment="Left" Text="0" VerticalAlignment="Top" TextAlignment="Center" Foreground="White" Width="40" Height="105" Margin="368,56,0,0"/>
+                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Seconds2ButtonUp" FontSize="10" Content="5" VerticalAlignment="Center" Height="24" BorderThickness="0" Background="Transparent" Margin="377,57,95.4,142" Click="Seconds2ButtonUp_Click"/>
+                    <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Seconds2ButtonDown" FontSize="10" Content="6" BorderThickness="0" Height="25" Background="Transparent" RenderTransformOrigin="1.548,1.332" Margin="377,135,95.4,64" Click="Seconds2ButtonDown_Click"/>
+
+
+                    <Controls:DropDownButton Name="TaskTypeButton" VerticalContentAlignment="Center" Content="Выберите тип задания" DisplayMemberPath="Title" Margin="174,10,171.4,178"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="История заданий" Margin="30.2,0,-29.8,0.2">
+                <Grid>
+                    <DataGrid Style="{StaticResource AzureDataGrid}" HorizontalAlignment="Left" Height="191" Margin="17,17,0,0" VerticalAlignment="Top" Width="458"/>
+
                 </Grid>
             </TabItem>
         </TabControl>
