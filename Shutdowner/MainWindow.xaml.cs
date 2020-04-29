@@ -17,19 +17,32 @@ namespace Shutdowner
     public partial class MainWindow : MetroWindow
     {
         MyCountDownTimer timer = new MyCountDownTimer();
-        MySheduler mySheduler;
-
+        MySheduler mySheduler = new MySheduler();
+        List<TaskType> types = new List<TaskType>();
+        string apppath = "";
         public MainWindow()
         {
             InitializeComponent();
+
+            AddTypes();
+
             timer.TimerTick += Timer_TimeChangedEvent;
             timer.TimerStop += Timer_TimerStop;
 
             StartButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
 
-            mySheduler = new MySheduler();
+            TasksDataGrid.ItemsSource = mySheduler.MyTasks;
 
             SetTimerColor(Color.FromRgb(65, 177, 225));
+        }
+
+        void AddTypes()
+        {
+            types.Add(new TaskType("Выключение", "Shutdown"));
+            types.Add(new TaskType("Перезагрузка", "Restart"));
+            types.Add(new TaskType("Гибернация", "Hibernate"));
+            types.Add(new TaskType("Запуск приложения", "RunApp"));
+            TaskTypeButton.ItemsSource = types;
         }
 
         private void Timer_TimerStop()
@@ -142,41 +155,7 @@ namespace Shutdowner
             TaskTypeButton.Visibility = Visibility.Visible;
         }
 
-        void AbortShutdown()
-        {
-            ProcessStartInfo procStartInfo = new ProcessStartInfo("cmd", "/c shutdown /a")
-            {
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
 
-            using (Process proc = new Process())
-            {
-                proc.StartInfo = procStartInfo;
-                proc.Start();
-            }
-        }
-
-        void CreateNewTaskAtTime(string description, string app, string arguments, DateTime time)
-        {
-            using (TaskService ts = new TaskService())
-            {
-                // Create a new task definition and assign properties
-                TaskDefinition td = ts.NewTask();
-                td.RegistrationInfo.Description = description;
-
-                // Create a trigger that will fire the task at this time every other day
-                td.Triggers.Add(new TimeTrigger(time));
-
-                // Create an action that will launch Notepad whenever the trigger fires
-                td.Actions.Add(new ExecAction(app, arguments, null));
-
-                // Register the task in the root folder
-                ts.RootFolder.RegisterTaskDefinition(@"Shutdowner", td);
-            }
-        }
 
         int GetSeconds()
         {
@@ -185,14 +164,36 @@ namespace Shutdowner
 
         private void StartButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            MyTask task;
             if (GetSeconds() > 0)
+            {
+                switch ((TaskTypeButton.SelectedValue as TaskType).Value)
+                {
+                    case "Shutdown":
+                        task = new MyTask("Запланированное выключение", "shutdown.exe", "/s /t 1000", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                        break;
+                    case "Restart":
+                        task = new MyTask("Запланированная перезагрузка", "shutdown.exe", "/r /t 1000", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                        break;
+                    case "Hibernate":
+                        task = new MyTask("Запланированная гибернация", "shutdown.exe", "/h /t 1000", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                        break;
+                    case "RunApp":
+                        task = new MyTask("Запланированное выключение", apppath, "", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                        break;
+                    default:
+                        task = new MyTask();
+                        break;
+                }
+
                 if (StartButton.Content.ToString() == "пуск")
                 {
-                    StartButton.Content = "стоп";
+                    StartButton.Content = "сброс";
                     HideUpDownButtons();
                     StartButton.Background = new SolidColorBrush(Colors.Red);
                     timer.StartTimer(GetSeconds());
-                    CreateNewTaskAtTime("Запланированное выключение", "shutdown.exe", "/s /t 1000", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                    mySheduler.CreateNewTaskAtTime(task.Description, task.AppName, task.Arguments, task.Trigger);
+                    mySheduler.LoadTasks();
 
                 }
                 else
@@ -202,6 +203,7 @@ namespace Shutdowner
                     StartButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
                     timer.StopTimer();
                 }
+            }
             else MessageBox.Show("установите таймер");
         }
 
@@ -287,6 +289,26 @@ namespace Shutdowner
             if ((int.Parse(Hours1.Text) + 1) < 9)
                 Hours1.Text = (int.Parse(Hours1.Text) + 1).ToString();
             else Hours1.Text = 9.ToString();
+        }
+
+        private void TaskTypeButton_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (TaskTypeButton.SelectedValue.ToString() == "RunApp")
+            {
+                Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+                openFileDialog.Filter = "exe files (*.exe)|*.exe|All files (*.*)|*.*";
+                openFileDialog.FilterIndex = 1;
+                openFileDialog.RestoreDirectory = true;
+
+                if ((bool)openFileDialog.ShowDialog())
+                    apppath = openFileDialog.FileName;
+            }
+        }
+
+        private void CancelTaskButton_Click(object sender, RoutedEventArgs e)
+        {
+            mySheduler.ChangeTaskStatus(TasksDataGrid.SelectedItem as MyTaskView);
+            mySheduler.LoadTasks();
         }
     }
 }

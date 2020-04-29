@@ -137,6 +137,8 @@
     </ApplicationDefinition>
     <Compile Include="MyCountDownTimer.cs" />
     <Compile Include="MySheduler.cs" />
+    <Compile Include="MyTask.cs" />
+    <Compile Include="MyTaskView.cs" />
     <Compile Include="SerializeHelper.cs" />
     <Compile Include="Windows\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
