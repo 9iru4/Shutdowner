@@ -38,8 +38,8 @@
     </Controls:MetroWindow.RightWindowCommands>
 
     <Grid x:Name="MainGrid">
-        <TabControl HorizontalAlignment="Left" Height="321" VerticalAlignment="Top" Width="640" Margin="0,0,0,-1.8">
-            <TabItem Header="Запустить задание" Margin="58,0,-58.2,0.2">
+        <TabControl x:Name="AppTabs" HorizontalAlignment="Left" Height="321" VerticalAlignment="Top" Width="640" Margin="0,0,0,-1.8">
+            <TabItem Name="CreateTaskTab" Header="Запустить задание" Margin="58,0,-58.2,0.2">
                 <Grid>
                     <Button Content="пуск" Name="StartButton" HorizontalAlignment="Left" Margin="280,205,0,0" VerticalAlignment="Top" Width="76" Style="{DynamicResource SquareButtonStyle}" Background="White" Click="StartButton_Click"/>
 
@@ -64,10 +64,10 @@
                     <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Seconds2ButtonUp" FontSize="10" Content="5" VerticalAlignment="Bottom" Height="24" BorderThickness="0" Background="Transparent" Margin="0,0,175,182.4" Click="Seconds2ButtonUp_Click" HorizontalAlignment="Right" Width="20"/>
                     <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Seconds2ButtonDown" FontSize="10" Content="6" BorderThickness="0" Height="25" Background="Transparent" RenderTransformOrigin="1.548,1.332" Margin="0,0,175,104.4" Click="Seconds2ButtonDown_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="20"/>
 
-                    <Controls:SplitButton  Name="TaskTypeButton" SelectionChanged="TaskTypeButton_SelectionChanged" VerticalContentAlignment="Center" SelectedIndex="0"  DisplayMemberPath="Name" Margin="178,10,176.4,228.4"/>
+                    <Controls:SplitButton  Name="TaskTypeButton" VerticalContentAlignment="Center" SelectedIndex="0"  DisplayMemberPath="Name" Margin="178,10,176.4,228.4"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="История заданий" Margin="118.2,0,-117.8,0.2">
+            <TabItem Name="TaskHistoryTab" Header="История заданий" Margin="118.2,0,-117.8,0.2">
                 <Grid>
                     <DataGrid CanUserAddRows="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False" x:Name="TasksDataGrid" Style="{StaticResource AzureDataGrid}" HorizontalAlignment="Left" Height="199" Margin="19,17,0,0" VerticalAlignment="Top" Width="597">
                         <DataGrid.Columns>
@@ -104,7 +104,7 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Button Content="Button" HorizontalAlignment="Left" Margin="278,226,0,0" VerticalAlignment="Top" Width="80"/>
+                    <Button x:Name="DeleteAllTaskHistoryButton"  Content="Очистить" HorizontalAlignment="Left" Margin="278,226,0,0" VerticalAlignment="Top" Width="80" Click="DeleteAllTaskHistoryButton_Click"/>
                 </Grid>
             </TabItem>
         </TabControl>

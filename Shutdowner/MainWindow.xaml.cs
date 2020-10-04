@@ -1,12 +1,10 @@
 ﻿using MahApps.Metro.Controls;
-using Microsoft.Win32.TaskScheduler;
 using Shutdowner.Windows;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace Shutdowner
@@ -16,35 +14,127 @@ namespace Shutdowner
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        /// <summary>
+        /// Таймер
+        /// </summary>
         MyCountDownTimer timer = new MyCountDownTimer();
+
+        /// <summary>
+        /// Планировщик
+        /// </summary>
         MySheduler mySheduler = new MySheduler();
+
+        /// <summary>
+        /// Типы заданий
+        /// </summary>
         List<TaskType> types = new List<TaskType>();
+
         string apppath = "";
         public MainWindow()
         {
             InitializeComponent();
 
+            //Загрузка типов заданий
             AddTypes();
 
+            //Событие изменения выбранного задания
+            TaskTypeButton.SelectionChanged += TaskTypeButton_SelectionChanged;
+
+            //Событие тика таймера
             timer.TimerTick += Timer_TimeChangedEvent;
+            //Событие остановки таймера
             timer.TimerStop += Timer_TimerStop;
-
+            //Событие изменения вкладки
+            AppTabs.SelectionChanged += AppTabs_SelectionChanged;
+            //Отрисовка фона кнопки начать
             StartButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
-
+            //Загрузка задач из планировщика
             TasksDataGrid.ItemsSource = mySheduler.MyTasks;
 
+            //Цвет таймера
             SetTimerColor(Color.FromRgb(65, 177, 225));
         }
 
+        /// <summary>
+        /// Метод смены активной вкладки
+        /// </summary>
+        private void AppTabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if ((AppTabs.SelectedItem as TabItem).Name == "CreateTaskTab")
+                TaskTypeButton_SelectionChanged(null, null);//если вкладка создать задачу, проверяем активные таймеры
+        }
+
+        /// <summary>
+        /// Событие смены типа задачи
+        /// </summary>
+        private void TaskTypeButton_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch ((TaskTypeButton.SelectedValue as TaskType).Value)
+            {
+                case "Shutdown"://выключение
+                    {
+                        if (timer.IsTimerStarted()) StopTimer();
+                        foreach (var task in mySheduler.MyTasks)
+                        {
+                            //если есть задача, создаем таймер для нее
+                            if (task.Description == "Запланированное выключение" && task.Enabled)
+                            {
+                                SetTime(MyCountDownTimer.GetTime((int)(task.DateTrigger - DateTime.Now).TotalSeconds));
+                                StartTimer();
+                            }
+                        }
+                    }
+                    break;
+                case "Restart"://перезагрузка
+                    {
+                        if (timer.IsTimerStarted()) StopTimer();
+                        foreach (var task in mySheduler.MyTasks)
+                        {
+                            //если есть задача, создаем таймер для нее
+                            if (task.Description == "Запланированная перезагрузка" && task.Enabled)
+                            {
+                                SetTime(MyCountDownTimer.GetTime((int)(task.DateTrigger - DateTime.Now).TotalSeconds));
+                                StartTimer();
+                            }
+                        }
+                    }
+                    break;
+                case "Hibernate"://гибернация
+                    {
+                        if (timer.IsTimerStarted()) StopTimer();
+                        foreach (var task in mySheduler.MyTasks)
+                        {
+                            //если есть задача, создаем таймер для нее
+                            if (task.Description == "Запланированная гибернация" && task.Enabled)
+                            {
+                                SetTime(MyCountDownTimer.GetTime((int)(task.DateTrigger - DateTime.Now).TotalSeconds));
+                                StartTimer();
+                            }
+                        }
+                    }
+                    break;
+                case "RunApp":
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Добавление типов задач
+        /// </summary>
         void AddTypes()
         {
             types.Add(new TaskType("Выключение", "Shutdown"));
             types.Add(new TaskType("Перезагрузка", "Restart"));
             types.Add(new TaskType("Гибернация", "Hibernate"));
-            types.Add(new TaskType("Запуск приложения", "RunApp"));
+            //types.Add(new TaskType("Запуск приложения", "RunApp"));
             TaskTypeButton.ItemsSource = types;
         }
 
+        /// <summary>
+        /// Остановка таймера
+        /// </summary>
         private void Timer_TimerStop()
         {
             StartButton.Content = "пуск";
@@ -52,11 +142,18 @@ namespace Shutdowner
             StartButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
         }
 
+        /// <summary>
+        /// Тик таймера
+        /// </summary>
         private void Timer_TimeChangedEvent()
         {
             SetTime(timer.GetTime());
         }
 
+        /// <summary>
+        /// Установка времени на таймере
+        /// </summary>
+        /// <param name="time">Время в формате Ч Ч М М С С</param>
         void SetTime(string time)
         {
             var clock = time.Split(' ');
@@ -68,24 +165,37 @@ namespace Shutdowner
             Seconds2.Text = clock[5];
         }
 
-        private void AboutButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Вызов окна о программе
+        /// </summary>
+        private void AboutButton_Click(object sender, RoutedEventArgs e)
         {
             AboutWindow aboutWindow = new AboutWindow(this);
             aboutWindow.ShowDialog();
         }
 
-        private void SettingButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Вызов окна настройки
+        /// </summary>
+        private void SettingButton_Click(object sender, RoutedEventArgs e)
         {
             SettingsWindow settingsWindow = new SettingsWindow(this);
             settingsWindow.ShowDialog();
         }
 
-        private void DonateButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Вызов окна поддержать разработчика
+        /// </summary>
+        private void DonateButton_Click(object sender, RoutedEventArgs e)
         {
             DonateWindow donateWindow = new DonateWindow(this);
             donateWindow.ShowDialog();
         }
 
+        /// <summary>
+        /// Установка цветов таймера
+        /// </summary>
+        /// <param name="color">Цвет</param>
         void SetTimerColor(Color color)
         {
             Hours1.Background = new SolidColorBrush(color);
@@ -115,6 +225,9 @@ namespace Shutdowner
             TaskTypeButton.Background = new SolidColorBrush(color);
         }
 
+        /// <summary>
+        /// Скрытие кнопок таймера
+        /// </summary>
         void HideUpDownButtons()
         {
             Seconds1ButtonUp.Visibility = Visibility.Hidden;
@@ -131,10 +244,11 @@ namespace Shutdowner
             Hours1ButtonDown.Visibility = Visibility.Hidden;
             Hours2ButtonUp.Visibility = Visibility.Hidden;
             Hours2ButtonDown.Visibility = Visibility.Hidden;
-
-            TaskTypeButton.Visibility = Visibility.Hidden;
         }
 
+        /// <summary>
+        /// Отображение кнопок таймера
+        /// </summary>
         void ShowUpDownButons()
         {
             Seconds1ButtonUp.Visibility = Visibility.Visible;
@@ -151,164 +265,229 @@ namespace Shutdowner
             Hours1ButtonDown.Visibility = Visibility.Visible;
             Hours2ButtonUp.Visibility = Visibility.Visible;
             Hours2ButtonDown.Visibility = Visibility.Visible;
-
-            TaskTypeButton.Visibility = Visibility.Visible;
         }
 
-
-
+        /// <summary>
+        /// Получение количества секунд установленных на таймере
+        /// </summary>
+        /// <returns>Количество секунд</returns>
         int GetSeconds()
         {
             return int.Parse(Hours1.Text + Hours2.Text) * 60 * 60 + int.Parse(Minutes1.Text + Minutes2.Text) * 60 + int.Parse(Seconds1.Text + Seconds2.Text);
         }
 
-        private void StartButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Запуск таймера
+        /// </summary>
+        private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             MyTask task;
             if (GetSeconds() > 0)
             {
-                switch ((TaskTypeButton.SelectedValue as TaskType).Value)
-                {
-                    case "Shutdown":
-                        task = new MyTask("Запланированное выключение", "shutdown.exe", "/s /t 1000", DateTime.Now.AddSeconds(GetSeconds() + 1));
-                        break;
-                    case "Restart":
-                        task = new MyTask("Запланированная перезагрузка", "shutdown.exe", "/r /t 1000", DateTime.Now.AddSeconds(GetSeconds() + 1));
-                        break;
-                    case "Hibernate":
-                        task = new MyTask("Запланированная гибернация", "shutdown.exe", "/h /t 1000", DateTime.Now.AddSeconds(GetSeconds() + 1));
-                        break;
-                    case "RunApp":
-                        task = new MyTask("Запланированное выключение", apppath, "", DateTime.Now.AddSeconds(GetSeconds() + 1));
-                        break;
-                    default:
-                        task = new MyTask();
-                        break;
-                }
-
                 if (StartButton.Content.ToString() == "пуск")
                 {
-                    StartButton.Content = "сброс";
-                    HideUpDownButtons();
-                    StartButton.Background = new SolidColorBrush(Colors.Red);
-                    timer.StartTimer(GetSeconds());
-                    mySheduler.CreateNewTaskAtTime(task.Description, task.AppName, task.Arguments, task.Trigger);
+                    switch ((TaskTypeButton.SelectedValue as TaskType).Value)//по типу задачи
+                    {
+                        case "Shutdown":
+                            task = new MyTask("Запланированное выключение", "shutdown.exe", "/s", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                            break;
+                        case "Restart":
+                            task = new MyTask("Запланированная перезагрузка", "shutdown.exe", "/r", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                            break;
+                        case "Hibernate":
+                            task = new MyTask("Запланированная гибернация", "shutdown.exe", "/h", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                            break;
+                        case "RunApp":
+                            task = new MyTask("Запланированное выключение", apppath, "", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                            break;
+                        default:
+                            task = new MyTask();
+                            break;
+                    }
+                    StartTimer();
+                    mySheduler.CreateNewTaskAtTime(task.Description, task.AppName, task.Arguments, task.Trigger);//добавление задачи
                     mySheduler.LoadTasks();
-
                 }
                 else
                 {
-                    StartButton.Content = "пуск";
-                    ShowUpDownButons();
-                    StartButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
-                    timer.StopTimer();
+                    StopTimer();
                 }
             }
             else MessageBox.Show("установите таймер");
         }
 
-        private void Seconds2ButtonDown_Click(object sender, System.Windows.RoutedEventArgs e)
+        //Запуск таймера
+        void StartTimer()
+        {
+            StartButton.Content = "сброс";
+            HideUpDownButtons();
+            StartButton.Background = new SolidColorBrush(Colors.Red);
+            timer.StartTimer(GetSeconds());
+        }
+
+        /// <summary>
+        /// Остановка таймера
+        /// </summary>
+        void StopTimer()
+        {
+            ResetTimer();
+            StartButton.Content = "пуск";
+            ShowUpDownButons();
+            StartButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
+            timer.StopTimer();
+        }
+
+        /// <summary>
+        /// Установка таймера в 0
+        /// </summary>
+        void ResetTimer()
+        {
+            Seconds2.Text = "0";
+            Seconds1.Text = "0";
+            Minutes2.Text = "0";
+            Minutes1.Text = "0";
+            Hours2.Text = "0";
+            Hours1.Text = "0";
+        }
+
+        /// <summary>
+        /// Уменьшение цифры секунд 2
+        /// </summary>
+        private void Seconds2ButtonDown_Click(object sender, RoutedEventArgs e)
         {
             if ((int.Parse(Seconds2.Text) - 1) > 0)
                 Seconds2.Text = (int.Parse(Seconds2.Text) - 1).ToString();
             else Seconds2.Text = 0.ToString();
         }
 
-        private void Seconds2ButtonUp_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Увеличение цифры секунд 2
+        /// </summary>
+        private void Seconds2ButtonUp_Click(object sender, RoutedEventArgs e)
         {
             if ((int.Parse(Seconds2.Text) + 1) < 9)
                 Seconds2.Text = (int.Parse(Seconds2.Text) + 1).ToString();
             else Seconds2.Text = 9.ToString();
         }
 
-        private void Seconds1ButtonUp_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Увеличение цифры секунд 1
+        /// </summary>
+        private void Seconds1ButtonUp_Click(object sender, RoutedEventArgs e)
         {
             if ((int.Parse(Seconds1.Text) + 1) < 6)
                 Seconds1.Text = (int.Parse(Seconds1.Text) + 1).ToString();
             else Seconds1.Text = 5.ToString();
         }
 
-        private void Seconds1ButtonDown_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Уменьшение цифры секунд 1
+        /// </summary>
+        private void Seconds1ButtonDown_Click(object sender, RoutedEventArgs e)
         {
             if ((int.Parse(Seconds1.Text) - 1) > 0)
                 Seconds1.Text = (int.Parse(Seconds1.Text) - 1).ToString();
             else Seconds1.Text = 0.ToString();
         }
 
-        private void Minutes2ButtonDown_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Уменьшение цифры минут 2
+        /// </summary>
+        private void Minutes2ButtonDown_Click(object sender, RoutedEventArgs e)
         {
             if ((int.Parse(Minutes2.Text) - 1) > 0)
                 Minutes2.Text = (int.Parse(Minutes2.Text) - 1).ToString();
             else Minutes2.Text = 0.ToString();
         }
 
-        private void Minutes2ButtonUp_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Увеличение цифры минут 2
+        /// </summary>
+        private void Minutes2ButtonUp_Click(object sender, RoutedEventArgs e)
         {
             if ((int.Parse(Minutes2.Text) + 1) < 9)
                 Minutes2.Text = (int.Parse(Minutes2.Text) + 1).ToString();
             else Minutes2.Text = 9.ToString();
         }
 
-        private void Minutes1ButtonDown_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Уменьшение цифры минут 1
+        /// </summary>
+        private void Minutes1ButtonDown_Click(object sender, RoutedEventArgs e)
         {
             if ((int.Parse(Minutes1.Text) - 1) > 0)
                 Minutes1.Text = (int.Parse(Minutes1.Text) - 1).ToString();
             else Minutes1.Text = 0.ToString();
         }
 
-        private void Minutes1ButtonUp_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Увеличение цифры минут 1
+        /// </summary>
+        private void Minutes1ButtonUp_Click(object sender, RoutedEventArgs e)
         {
             if ((int.Parse(Minutes1.Text) + 1) < 6)
                 Minutes1.Text = (int.Parse(Minutes1.Text) + 1).ToString();
             else Minutes1.Text = 5.ToString();
         }
 
-        private void Hours2ButtonDown_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Уменьшение цифры часов 2
+        /// </summary>
+        private void Hours2ButtonDown_Click(object sender, RoutedEventArgs e)
         {
             if ((int.Parse(Hours2.Text) - 1) > 0)
                 Hours2.Text = (int.Parse(Hours2.Text) - 1).ToString();
             else Hours2.Text = 0.ToString();
         }
 
-        private void Hours2ButtonUp_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Увеличение цифры часов 2
+        /// </summary>
+        private void Hours2ButtonUp_Click(object sender, RoutedEventArgs e)
         {
             if ((int.Parse(Hours2.Text) + 1) < 9)
                 Hours2.Text = (int.Parse(Hours2.Text) + 1).ToString();
             else Hours2.Text = 9.ToString();
         }
 
-        private void Hours1ButtonDown_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Уменьшение цифры часов 1
+        /// </summary>
+        private void Hours1ButtonDown_Click(object sender, RoutedEventArgs e)
         {
             if ((int.Parse(Hours1.Text) - 1) > 0)
                 Hours1.Text = (int.Parse(Hours1.Text) - 1).ToString();
             else Hours1.Text = 0.ToString();
         }
 
-        private void Hours1ButtonUp_Click(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Увеличение цифры часов 1
+        /// </summary>
+        private void Hours1ButtonUp_Click(object sender, RoutedEventArgs e)
         {
             if ((int.Parse(Hours1.Text) + 1) < 9)
                 Hours1.Text = (int.Parse(Hours1.Text) + 1).ToString();
             else Hours1.Text = 9.ToString();
         }
 
-        private void TaskTypeButton_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (TaskTypeButton.SelectedValue.ToString() == "RunApp")
-            {
-                Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
-                openFileDialog.Filter = "exe files (*.exe)|*.exe|All files (*.*)|*.*";
-                openFileDialog.FilterIndex = 1;
-                openFileDialog.RestoreDirectory = true;
-
-                if ((bool)openFileDialog.ShowDialog())
-                    apppath = openFileDialog.FileName;
-            }
-        }
-
+        /// <summary>
+        /// Отменить задание
+        /// </summary>
         private void CancelTaskButton_Click(object sender, RoutedEventArgs e)
         {
             mySheduler.ChangeTaskStatus(TasksDataGrid.SelectedItem as MyTaskView);
             mySheduler.LoadTasks();
+        }
+
+        /// <summary>
+        /// Удалить все задания
+        /// </summary>
+        private void DeleteAllTaskHistoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var task in mySheduler.MyTasks.ToList())
+            {
+                mySheduler.RemoveTask(task);
+            }
         }
     }
 }

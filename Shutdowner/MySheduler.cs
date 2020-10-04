@@ -1,33 +1,50 @@
 ﻿using Microsoft.Win32.TaskScheduler;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Shutdowner
 {
-
+    /// <summary>
+    /// Планировщик
+    /// </summary>
     public class MySheduler
     {
-        List<Microsoft.Win32.TaskScheduler.Task> AllTasks;
+        /// <summary>
+        /// Все задания
+        /// </summary>
+        List<Task> AllTasks;
 
-        public List<MyTaskView> MyTasks = new List<MyTaskView>();
+        /// <summary>
+        /// Список заданий этой программы
+        /// </summary>
+        public ObservableCollection<MyTaskView> MyTasks = new ObservableCollection<MyTaskView>();
 
+        /// <summary>
+        /// Конструктор с базовой инициализацией
+        /// </summary>
         public MySheduler()
         {
             CreateTaskFolder();
             LoadTasks();
         }
 
+        /// <summary>
+        /// Создание папки в планировщике
+        /// </summary>
         void CreateTaskFolder()
         {
             using (TaskService taskService = new TaskService())
-                if (taskService.RootFolder.SubFolders.Where(x => x.Name == @"Shutdowner").FirstOrDefault() == null)
+                if (taskService.RootFolder.SubFolders.Where(x => x.Name == @"Shutdowner").FirstOrDefault() == null)//Если не существует
                 {
                     taskService.RootFolder.CreateFolder(@"\Shutdowner");
                 }
         }
 
+        /// <summary>
+        /// Загрузка заданий из планировщика
+        /// </summary>
         public void LoadTasks()
         {
             foreach (var item in MyTasks.ToList())
@@ -35,21 +52,30 @@ namespace Shutdowner
                 MyTasks.Remove(item);
             }
             using (TaskService taskService = new TaskService())
-                AllTasks = new List<Microsoft.Win32.TaskScheduler.Task>(taskService.RootFolder.SubFolders.Where(x => x.Name == @"Shutdowner").FirstOrDefault().AllTasks);
+                AllTasks = new List<Task>(taskService.RootFolder.SubFolders.Where(x => x.Name == @"Shutdowner").FirstOrDefault().AllTasks);
             foreach (var task in AllTasks)
             {
                 MyTasks.Add(new MyTaskView(task.Name, task.Definition.RegistrationInfo.Description, task.Definition.Triggers[0].StartBoundary, task.LastTaskResult == 0 ? true : false, task.Enabled));
             }
         }
 
-        public void RemoveTask(Microsoft.Win32.TaskScheduler.Task task)
+        /// <summary>
+        /// Удаление задания
+        /// </summary>
+        /// <param name="task">Задание</param>
+        public void RemoveTask(MyTaskView task)
         {
+            MyTasks.Remove(task);
             using (TaskService ts = new TaskService())
             {
                 ts.RootFolder.SubFolders.Where(x => x.Name == @"Shutdowner").FirstOrDefault().DeleteTask(task.Name);
             }
         }
 
+        /// <summary>
+        /// Изменение статуса задачи
+        /// </summary>
+        /// <param name="task"></param>
         public void ChangeTaskStatus(MyTaskView task)
         {
             using (TaskService ts = new TaskService())
@@ -58,6 +84,13 @@ namespace Shutdowner
             }
         }
 
+        /// <summary>
+        /// Создание задачи
+        /// </summary>
+        /// <param name="description">Описание</param>
+        /// <param name="app">Программа</param>
+        /// <param name="arguments">Аргументы</param>
+        /// <param name="time">Время</param>
         public void CreateNewTaskAtTime(string description, string app, string arguments, DateTime time)
         {
             string taskDate = time.Day + "-" + time.Month + "-" + time.Year + "_" + time.Hour + "-" + time.Minute + "-" + time.Second;
@@ -70,11 +103,11 @@ namespace Shutdowner
                 // Create a trigger that will fire the task at this time every other day
                 td.Triggers.Add(new TimeTrigger(time));
 
-                // Create an action that will launch Notepad whenever the trigger fires
+                // Create an action that will launch whenever the trigger fires
                 td.Actions.Add(new ExecAction(app, arguments, null));
 
                 // Register the task in the root folder
-                ts.RootFolder.RegisterTaskDefinition(@"\Shutdowner\Task" + taskDate, td);
+                ts.RootFolder.RegisterTaskDefinition(@"\Shutdowner\Task " + taskDate, td);
             }
         }
     }
