@@ -45,8 +45,10 @@ namespace Shutdowner
             {
                 foreach (var task in taskService.RootFolder.SubFolders.Where(x => x.Name == @"Shutdowner").FirstOrDefault().AllTasks)
                 {
-                    if (MyTasks.Where(x => x.Name == task.Name).FirstOrDefault() == null)
-                        MyTasks.Add(new MyTaskView(task.Name, task.Definition.RegistrationInfo.Description, task.Definition.Triggers[0].StartBoundary, task.LastTaskResult == 0 ? true : false, task.Enabled));
+                    var myTask = MyTasks.Where(x => x.Name == task.Name).FirstOrDefault();
+                    if (myTask != null)
+                        MyTasks.Remove(myTask);
+                    MyTasks.Add(new MyTaskView(task.Name, task.Definition.RegistrationInfo.Description, task.Definition.Triggers[0].StartBoundary, task.IsActive, task.Enabled));
                 }
             }
         }
@@ -93,6 +95,8 @@ namespace Shutdowner
                 // Создание нового описания задания
                 TaskDefinition td = ts.NewTask();
                 td.RegistrationInfo.Description = description;
+
+                td.Principal.RunLevel = TaskRunLevel.Highest;
 
                 // Добавление тригера срабатывания
                 td.Triggers.Add(new TimeTrigger(time));

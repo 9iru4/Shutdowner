@@ -139,6 +139,9 @@
     <Compile Include="MySheduler.cs" />
     <Compile Include="MyTaskView.cs" />
     <Compile Include="SerializeHelper.cs" />
+    <Compile Include="Windows\ApplicationWindow.xaml.cs">
+      <DependentUpon>ApplicationWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\MessageWindow.xaml.cs">
       <DependentUpon>MessageWindow.xaml</DependentUpon>
     </Compile>
@@ -146,6 +149,10 @@
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Windows\AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ApplicationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

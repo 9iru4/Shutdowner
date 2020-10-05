@@ -60,5 +60,20 @@ namespace Shutdowner
             Complited = complite;
             Enabled = enable;
         }
+
+        /// <summary>
+        /// Обновление задачи
+        /// </summary>
+        /// <param name="description">Описание</param>
+        /// <param name="trigger">Дата</param>
+        /// <param name="complite">Выполнено ли</param>
+        /// <param name="enable"> Включено ли</param>
+        public void UpdateTask(string description, DateTime trigger, bool complite, bool enable)
+        {
+            Description = description;
+            DateTrigger = trigger;
+            Complited = complite;
+            Enabled = enable;
+        }
     }
 }

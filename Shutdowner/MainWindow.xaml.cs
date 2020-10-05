@@ -16,6 +16,10 @@ namespace Shutdowner
     public partial class MainWindow : MetroWindow
     {
         /// <summary>
+        /// Настройки для запуска приложения
+        /// </summary>
+        (bool, string, string) AppSettings = (false, "", "");
+        /// <summary>
         /// Таймер
         /// </summary>
         MyCountDownTimer timer = new MyCountDownTimer();
@@ -40,13 +44,8 @@ namespace Shutdowner
             timer.TimerStop += Timer_TimerStop;
             //Событие изменения вкладки
             AppTabs.SelectionChanged += AppTabs_SelectionChanged;
-            //Отрисовка фона кнопки начать
-            StartButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
             //Загрузка задач из планировщика
             TasksDataGrid.ItemsSource = mySheduler.MyTasks;
-
-            //Цвет таймера
-            SetTimerColor(Color.FromRgb(65, 177, 225));
         }
 
         /// <summary>
@@ -56,6 +55,10 @@ namespace Shutdowner
         {
             if ((AppTabs.SelectedItem as TabItem).Name == "CreateTaskTab")
                 TaskTypeButton_SelectionChanged(null, null);//если вкладка создать задачу, проверяем активные таймеры
+            if ((AppTabs.SelectedItem as TabItem).Name == "TaskHistoryTab")
+            {
+                mySheduler.LoadTasks();
+            }
         }
 
         /// <summary>
@@ -107,7 +110,9 @@ namespace Shutdowner
                         }
                     }
                     break;
-                case TaskTypes.Приложение:
+                case TaskTypes.Приложение://сброс таймера, так как нет смысла его отбражать
+                    if (timer.IsTimerStarted()) StopTimer();
+                    AppSettings = (false, "", "");
                     break;
                 default:
                     break;
@@ -170,39 +175,6 @@ namespace Shutdowner
         {
             DonateWindow donateWindow = new DonateWindow(this);
             donateWindow.ShowDialog();
-        }
-
-        /// <summary>
-        /// Установка цветов таймера
-        /// </summary>
-        /// <param name="color">Цвет</param>
-        void SetTimerColor(Color color)
-        {
-            Hours1.Background = new SolidColorBrush(color);
-            Hours2.Background = new SolidColorBrush(color);
-            Minutes1.Background = new SolidColorBrush(color);
-            Minutes2.Background = new SolidColorBrush(color);
-            Seconds1.Background = new SolidColorBrush(color);
-            Seconds2.Background = new SolidColorBrush(color);
-            Divide1.Foreground = new SolidColorBrush(color);
-            Divide2.Foreground = new SolidColorBrush(color);
-
-            Seconds1ButtonUp.Background = new SolidColorBrush(color);
-            Seconds1ButtonDown.Background = new SolidColorBrush(color);
-            Seconds2ButtonUp.Background = new SolidColorBrush(color);
-            Seconds2ButtonDown.Background = new SolidColorBrush(color);
-
-            Minutes1ButtonUp.Background = new SolidColorBrush(color);
-            Minutes1ButtonDown.Background = new SolidColorBrush(color);
-            Minutes2ButtonUp.Background = new SolidColorBrush(color);
-            Minutes2ButtonDown.Background = new SolidColorBrush(color);
-
-            Hours1ButtonUp.Background = new SolidColorBrush(color);
-            Hours1ButtonDown.Background = new SolidColorBrush(color);
-            Hours2ButtonUp.Background = new SolidColorBrush(color);
-            Hours2ButtonDown.Background = new SolidColorBrush(color);
-
-            TaskTypeButton.Background = new SolidColorBrush(color);
         }
 
         /// <summary>
@@ -269,19 +241,40 @@ namespace Shutdowner
                     {
                         case TaskTypes.Выключение:
                             mySheduler.CreateNewTaskAtTime("Запланированное выключение", "shutdown.exe", "/s", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                            StartTimer();
                             break;
                         case TaskTypes.Перезагрузка:
                             mySheduler.CreateNewTaskAtTime("Запланированная перезагрузка", "shutdown.exe", "/r", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                            StartTimer();
                             break;
                         case TaskTypes.Гибернация:
                             mySheduler.CreateNewTaskAtTime("Запланированная гибернация", "shutdown.exe", "/h", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                            StartTimer();
                             break;
                         case TaskTypes.Приложение:
+                            {
+                                if (AppSettings.Item2 != "")
+                                {
+                                    if (AppSettings.Item1)
+                                    {
+                                        mySheduler.CreateNewTaskAtTime("Приложение", AppSettings.Item2, AppSettings.Item3, DateTime.Now.AddSeconds(GetSeconds() + 1));
+                                    }
+                                    else
+                                    {
+                                        mySheduler.CreateNewTaskAtTime("Приложение", "taskkill", "/f /im " + AppSettings.Item2.Split('\\').LastOrDefault(), DateTime.Now.AddSeconds(GetSeconds() + 1));
+                                    }
+                                    StartTimer();
+                                }
+                                else
+                                {
+                                    MessageWindow mw = new MessageWindow(this, "Уведомление", "Установите настройки для приложения, для этого нажмите на кнопку \"Приложение\".");
+                                    mw.ShowDialog();
+                                }
+                            }
                             break;
                         default:
                             break;
                     }
-                    StartTimer();
                 }
                 else
                 {
@@ -303,6 +296,7 @@ namespace Shutdowner
             StartButton.Content = "сброс";
             HideUpDownButtons();
             StartButton.Background = new SolidColorBrush(Colors.Red);
+            StartButton.Foreground = new SolidColorBrush(Colors.White);
             timer.StartTimer(GetSeconds());
         }
 
@@ -314,8 +308,8 @@ namespace Shutdowner
         {
             timer.StopTimer();
             ResetTimer();
-            StartButton.Content = "пуск";
             ShowUpDownButons();
+            StartButton.Content = "пуск";
             StartButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
         }
 
@@ -468,6 +462,27 @@ namespace Shutdowner
             foreach (var task in mySheduler.MyTasks.ToList())
             {
                 mySheduler.RemoveTask(task);
+            }
+        }
+
+        /// <summary>
+        /// Нажатие на кнопку типа задания
+        /// </summary>
+        private void TaskTypeButton_Click(object sender, RoutedEventArgs e)
+        {
+            switch ((TaskTypes)(sender as SplitButton).SelectedValue)
+            {
+                case TaskTypes.Приложение:
+                    {
+                        ApplicationWindow ap = new ApplicationWindow(this);
+                        ap.ShowDialog();
+                        AppSettings.Item1 = (bool)ap.AppTaskTypeSwitch.IsChecked;
+                        AppSettings.Item2 = ap.PathToAppTextBox.Text;
+                        AppSettings.Item3 = ap.ArgumentsTextBox.Text;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     }
