@@ -1,6 +1,5 @@
 ﻿using Microsoft.Win32.TaskScheduler;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -87,21 +86,25 @@ namespace Shutdowner
         /// <param name="time">Время</param>
         public void CreateNewTaskAtTime(string description, string app, string arguments, DateTime time)
         {
-            string taskDate = time.Day + "-" + time.Month + "-" + time.Year + "_" + time.Hour + "-" + time.Minute + "-" + time.Second;
+            //Имя задания 
+            string taskName = @"\Shutdowner\Task " + time.Day + "-" + time.Month + "-" + time.Year + "_" + time.Hour + "-" + time.Minute + "-" + time.Second;
             using (TaskService ts = new TaskService())
             {
-                // Create a new task definition and assign properties
+                // Создание нового описания задания
                 TaskDefinition td = ts.NewTask();
                 td.RegistrationInfo.Description = description;
 
-                // Create a trigger that will fire the task at this time every other day
+                // Добавление тригера срабатывания
                 td.Triggers.Add(new TimeTrigger(time));
 
-                // Create an action that will launch whenever the trigger fires
+                // Добавление действия
                 td.Actions.Add(new ExecAction(app, arguments, null));
 
-                // Register the task in the root folder
-                ts.RootFolder.RegisterTaskDefinition(@"\Shutdowner\Task " + taskDate, td);
+                // Регистрация задания в плнировщике
+                var task = ts.RootFolder.RegisterTaskDefinition(taskName, td);
+
+                //Добавление задания в список
+                MyTasks.Add(new MyTaskView(task.Name, task.Definition.RegistrationInfo.Description, task.Definition.Triggers[0].StartBoundary, task.LastTaskResult == 0 ? true : false, task.Enabled));
             }
         }
     }
