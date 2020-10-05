@@ -304,7 +304,6 @@ namespace Shutdowner
                     }
                     StartTimer();
                     mySheduler.CreateNewTaskAtTime(task.Description, task.AppName, task.Arguments, task.Trigger);//добавление задачи
-                    mySheduler.LoadTasks();
                 }
                 else
                 {
