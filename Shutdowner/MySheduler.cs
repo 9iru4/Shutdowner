@@ -12,11 +12,6 @@ namespace Shutdowner
     public class MySheduler
     {
         /// <summary>
-        /// Все задания
-        /// </summary>
-        List<Task> AllTasks;
-
-        /// <summary>
         /// Список заданий этой программы
         /// </summary>
         public ObservableCollection<MyTaskView> MyTasks = new ObservableCollection<MyTaskView>();
@@ -47,15 +42,19 @@ namespace Shutdowner
         /// </summary>
         public void LoadTasks()
         {
-            foreach (var item in MyTasks.ToList())
+            if (MyTasks.Count > 0)
             {
-                MyTasks.Remove(item);
+                foreach (var item in MyTasks.ToList())
+                {
+                    MyTasks.Remove(item);
+                }
             }
             using (TaskService taskService = new TaskService())
-                AllTasks = new List<Task>(taskService.RootFolder.SubFolders.Where(x => x.Name == @"Shutdowner").FirstOrDefault().AllTasks);
-            foreach (var task in AllTasks)
             {
-                MyTasks.Add(new MyTaskView(task.Name, task.Definition.RegistrationInfo.Description, task.Definition.Triggers[0].StartBoundary, task.LastTaskResult == 0 ? true : false, task.Enabled));
+                foreach (var task in taskService.RootFolder.SubFolders.Where(x => x.Name == @"Shutdowner").FirstOrDefault().AllTasks)
+                {
+                    MyTasks.Add(new MyTaskView(task.Name, task.Definition.RegistrationInfo.Description, task.Definition.Triggers[0].StartBoundary, task.LastTaskResult == 0 ? true : false, task.Enabled));
+                }
             }
         }
 
