@@ -476,8 +476,7 @@ namespace Shutdowner
         /// </summary>
         private void CancelTaskButton_Click(object sender, RoutedEventArgs e)
         {
-            mySheduler.ChangeTaskStatus(TasksDataGrid.SelectedItem as MyTaskView);
-            mySheduler.LoadTasks();
+            mySheduler.DisableTaskStatus(TasksDataGrid.SelectedItem as MyTaskView);
         }
 
         /// <summary>

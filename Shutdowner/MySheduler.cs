@@ -75,11 +75,12 @@ namespace Shutdowner
         /// Изменение статуса задачи
         /// </summary>
         /// <param name="task"></param>
-        public void ChangeTaskStatus(MyTaskView task)
+        public void DisableTaskStatus(MyTaskView task)
         {
             using (TaskService ts = new TaskService())
             {
                 ts.RootFolder.SubFolders.Where(x => x.Name == @"Shutdowner").FirstOrDefault().AllTasks.Where(x => x.Name == task.Name).FirstOrDefault().Enabled = false;
+                MyTasks.Where(x => x.Name == task.Name).FirstOrDefault().Enabled = false;
             }
         }
 
