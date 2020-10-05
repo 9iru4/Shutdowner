@@ -13,7 +13,7 @@ namespace Shutdowner.Windows
         /// <summary>
         /// Конструктор окна
         /// </summary>
-        /// <param name="owner">Владелец окна</param>
+        /// <param name="owner">Родительское окно</param>
         public ApplicationWindow(Window owner)
         {
             InitializeComponent();

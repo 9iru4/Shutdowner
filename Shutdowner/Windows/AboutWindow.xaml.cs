@@ -4,10 +4,14 @@ using System.Windows;
 namespace Shutdowner
 {
     /// <summary>
-    /// Логика взаимодействия для AboutWindow.xaml
+    /// Окно о приложении
     /// </summary>
     public partial class AboutWindow : MetroWindow
     {
+        /// <summary>
+        /// Создание окна
+        /// </summary>
+        /// <param name="owner">Родительское окно</param>
         public AboutWindow(Window owner)
         {
             InitializeComponent();

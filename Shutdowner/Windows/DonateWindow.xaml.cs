@@ -4,10 +4,14 @@ using System.Windows;
 namespace Shutdowner
 {
     /// <summary>
-    /// Логика взаимодействия для DonateWindow.xaml
+    /// Окно доната
     /// </summary>
     public partial class DonateWindow : MetroWindow
     {
+        /// <summary>
+        /// Конструктор окно
+        /// </summary>
+        /// <param name="owner">Родительское окно</param>
         public DonateWindow(Window owner)
         {
             InitializeComponent();

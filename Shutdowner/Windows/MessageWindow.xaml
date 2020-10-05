@@ -21,7 +21,7 @@
         </Controls:WindowCommands>
     </Controls:MetroWindow.LeftWindowCommands>
     <Grid>
-        <Button x:Name="OkButton" Content="ОК" HorizontalAlignment="Left" Margin="203,118,0,0" VerticalAlignment="Top" Width="75" Click="OkButton_Click"/>
+        <Button x:Name="OkButton" Content="ОК" HorizontalAlignment="Left" Background="#41b1e1" Foreground="White" BorderThickness="0" Margin="203,118,0,0" VerticalAlignment="Top" Width="75" Click="OkButton_Click"/>
         <Label x:Name="MessageText" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Height="81" Margin="19,20,0,0" VerticalAlignment="Top" Width="441"/>
 
     </Grid>
