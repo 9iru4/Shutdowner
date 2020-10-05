@@ -64,7 +64,7 @@
                     <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Seconds2ButtonUp" FontSize="10" Content="5" VerticalAlignment="Bottom" Height="24" BorderThickness="0" Background="Transparent" Margin="0,0,175,182.4" Click="Seconds2ButtonUp_Click" HorizontalAlignment="Right" Width="20"/>
                     <Button Style="{DynamicResource SquareButtonStyle}" FontFamily="Marlett" x:Name="Seconds2ButtonDown" FontSize="10" Content="6" BorderThickness="0" Height="25" Background="Transparent" RenderTransformOrigin="1.548,1.332" Margin="0,0,175,104.4" Click="Seconds2ButtonDown_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="20"/>
 
-                    <Controls:SplitButton  Name="TaskTypeButton" VerticalContentAlignment="Center" SelectedIndex="0"  DisplayMemberPath="Name" Margin="178,10,176.4,228.4"/>
+                    <Controls:SplitButton  Name="TaskTypeButton" VerticalContentAlignment="Center" SelectedIndex="0" Margin="178,10,176.4,228.4"/>
                 </Grid>
             </TabItem>
             <TabItem Name="TaskHistoryTab" Header="История заданий" Margin="118.2,0,-117.8,0.2">

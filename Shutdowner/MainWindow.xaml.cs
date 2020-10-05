@@ -1,7 +1,6 @@
 ﻿using MahApps.Metro.Controls;
 using Shutdowner.Windows;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +8,8 @@ using System.Windows.Media;
 
 namespace Shutdowner
 {
+    public enum TaskTypes { Выключение = 0, Перезагрузка, Гибернация, Приложение }
+
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
@@ -24,18 +25,11 @@ namespace Shutdowner
         /// </summary>
         MySheduler mySheduler = new MySheduler();
 
-        /// <summary>
-        /// Типы заданий
-        /// </summary>
-        List<TaskType> types = new List<TaskType>();
-
-        string apppath = "";
         public MainWindow()
         {
             InitializeComponent();
 
-            //Загрузка типов заданий
-            AddTypes();
+            TaskTypeButton.ItemsSource = Enum.GetValues(typeof(TaskTypes)).Cast<TaskTypes>();
 
             //Событие изменения выбранного задания
             TaskTypeButton.SelectionChanged += TaskTypeButton_SelectionChanged;
@@ -69,9 +63,9 @@ namespace Shutdowner
         /// </summary>
         private void TaskTypeButton_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            switch ((TaskTypeButton.SelectedValue as TaskType).Value)
+            switch ((TaskTypes)TaskTypeButton.SelectedValue)
             {
-                case "Shutdown"://выключение
+                case TaskTypes.Выключение://выключение
                     {
                         if (timer.IsTimerStarted()) StopTimer();
                         foreach (var task in mySheduler.MyTasks)
@@ -85,7 +79,7 @@ namespace Shutdowner
                         }
                     }
                     break;
-                case "Restart"://перезагрузка
+                case TaskTypes.Перезагрузка://перезагрузка
                     {
                         if (timer.IsTimerStarted()) StopTimer();
                         foreach (var task in mySheduler.MyTasks)
@@ -99,7 +93,7 @@ namespace Shutdowner
                         }
                     }
                     break;
-                case "Hibernate"://гибернация
+                case TaskTypes.Гибернация://гибернация
                     {
                         if (timer.IsTimerStarted()) StopTimer();
                         foreach (var task in mySheduler.MyTasks)
@@ -113,23 +107,11 @@ namespace Shutdowner
                         }
                     }
                     break;
-                case "RunApp":
+                case TaskTypes.Приложение:
                     break;
                 default:
                     break;
             }
-        }
-
-        /// <summary>
-        /// Добавление типов задач
-        /// </summary>
-        void AddTypes()
-        {
-            types.Add(new TaskType("Выключение", "Shutdown"));
-            types.Add(new TaskType("Перезагрузка", "Restart"));
-            types.Add(new TaskType("Гибернация", "Hibernate"));
-            //types.Add(new TaskType("Запуск приложения", "RunApp"));
-            TaskTypeButton.ItemsSource = types;
         }
 
         /// <summary>
@@ -283,18 +265,18 @@ namespace Shutdowner
             {
                 if (StartButton.Content.ToString() == "пуск")
                 {
-                    switch ((TaskTypeButton.SelectedValue as TaskType).Value)//по типу задачи
+                    switch ((TaskTypes)TaskTypeButton.SelectedValue)
                     {
-                        case "Shutdown":
+                        case TaskTypes.Выключение:
                             mySheduler.CreateNewTaskAtTime("Запланированное выключение", "shutdown.exe", "/s", DateTime.Now.AddSeconds(GetSeconds() + 1));
                             break;
-                        case "Restart":
+                        case TaskTypes.Перезагрузка:
                             mySheduler.CreateNewTaskAtTime("Запланированная перезагрузка", "shutdown.exe", "/r", DateTime.Now.AddSeconds(GetSeconds() + 1));
                             break;
-                        case "Hibernate":
+                        case TaskTypes.Гибернация:
                             mySheduler.CreateNewTaskAtTime("Запланированная гибернация", "shutdown.exe", "/h", DateTime.Now.AddSeconds(GetSeconds() + 1));
                             break;
-                        case "RunApp":
+                        case TaskTypes.Приложение:
                             break;
                         default:
                             break;
