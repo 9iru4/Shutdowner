@@ -137,9 +137,7 @@ namespace Shutdowner
         /// </summary>
         private void Timer_TimerStop()
         {
-            StartButton.Content = "пуск";
-            ShowUpDownButons();
-            StartButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
+            StopTimer();
         }
 
         /// <summary>
@@ -328,13 +326,14 @@ namespace Shutdowner
         /// <summary>
         /// Остановка таймера
         /// </summary>
+        /// <param name="reset">Сбросить ли текущий таймер</param>
         void StopTimer()
         {
+            timer.StopTimer();
             ResetTimer();
             StartButton.Content = "пуск";
             ShowUpDownButons();
             StartButton.Background = new SolidColorBrush(Color.FromRgb(65, 177, 225));
-            timer.StopTimer();
         }
 
         /// <summary>
