@@ -4,32 +4,6 @@ using System.Globalization;
 namespace Shutdowner
 {
     /// <summary>
-    /// Тип задач
-    /// </summary>
-    public class TaskType
-    {
-        /// <summary>
-        /// Название
-        /// </summary>
-        public string Name { get; set; }
-        /// <summary>
-        /// Значение
-        /// </summary>
-        public string Value { get; set; }
-
-        /// <summary>
-        /// Конструктор типа задач
-        /// </summary>
-        /// <param name="name">Имя</param>
-        /// <param name="value">Значение</param>
-        public TaskType(string name, string value)
-        {
-            Name = name;
-            Value = value;
-        }
-    }
-
-    /// <summary>
     /// Вьюшка задач
     /// </summary>
     public class MyTaskView
@@ -43,7 +17,7 @@ namespace Shutdowner
         /// </summary>
         public string Description { get; set; }
         /// <summary>
-        /// Дата 
+        /// Дата срабатывания
         /// </summary>
         public DateTime DateTrigger { get; set; }
 
