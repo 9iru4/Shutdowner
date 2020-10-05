@@ -279,7 +279,6 @@ namespace Shutdowner
         /// </summary>
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-            MyTask task;
             if (GetSeconds() > 0)
             {
                 if (StartButton.Content.ToString() == "пуск")
@@ -287,30 +286,27 @@ namespace Shutdowner
                     switch ((TaskTypeButton.SelectedValue as TaskType).Value)//по типу задачи
                     {
                         case "Shutdown":
-                            task = new MyTask("Запланированное выключение", "shutdown.exe", "/s", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                            mySheduler.CreateNewTaskAtTime("Запланированное выключение", "shutdown.exe", "/s", DateTime.Now.AddSeconds(GetSeconds() + 1));
                             break;
                         case "Restart":
-                            task = new MyTask("Запланированная перезагрузка", "shutdown.exe", "/r", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                            mySheduler.CreateNewTaskAtTime("Запланированная перезагрузка", "shutdown.exe", "/r", DateTime.Now.AddSeconds(GetSeconds() + 1));
                             break;
                         case "Hibernate":
-                            task = new MyTask("Запланированная гибернация", "shutdown.exe", "/h", DateTime.Now.AddSeconds(GetSeconds() + 1));
+                            mySheduler.CreateNewTaskAtTime("Запланированная гибернация", "shutdown.exe", "/h", DateTime.Now.AddSeconds(GetSeconds() + 1));
                             break;
                         case "RunApp":
-                            task = new MyTask("Запланированное выключение", apppath, "", DateTime.Now.AddSeconds(GetSeconds() + 1));
                             break;
                         default:
-                            task = new MyTask();
                             break;
                     }
                     StartTimer();
-                    mySheduler.CreateNewTaskAtTime(task.Description, task.AppName, task.Arguments, task.Trigger);//добавление задачи
                 }
                 else
                 {
                     StopTimer();
                 }
             }
-            else MessageBox.Show("установите таймер");
+            else MessageBox.Show("Установите таймер");
         }
 
         /// <summary>
