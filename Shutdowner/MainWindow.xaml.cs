@@ -288,7 +288,11 @@ namespace Shutdowner
                     StopTimer();
                 }
             }
-            else MessageBox.Show("Установите таймер");
+            else
+            {
+                MessageWindow mw = new MessageWindow(this, "Уведомление", "Для запуска таймера, установите время.");
+                mw.ShowDialog();
+            }
         }
 
         /// <summary>
