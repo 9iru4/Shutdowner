@@ -314,7 +314,9 @@ namespace Shutdowner
             else MessageBox.Show("установите таймер");
         }
 
-        //Запуск таймера
+        /// <summary>
+        /// Запуск таймера
+        /// </summary>
         void StartTimer()
         {
             StartButton.Content = "сброс";
