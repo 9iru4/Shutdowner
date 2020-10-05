@@ -42,18 +42,12 @@ namespace Shutdowner
         /// </summary>
         public void LoadTasks()
         {
-            if (MyTasks.Count > 0)
-            {
-                foreach (var item in MyTasks.ToList())
-                {
-                    MyTasks.Remove(item);
-                }
-            }
             using (TaskService taskService = new TaskService())
             {
                 foreach (var task in taskService.RootFolder.SubFolders.Where(x => x.Name == @"Shutdowner").FirstOrDefault().AllTasks)
                 {
-                    MyTasks.Add(new MyTaskView(task.Name, task.Definition.RegistrationInfo.Description, task.Definition.Triggers[0].StartBoundary, task.LastTaskResult == 0 ? true : false, task.Enabled));
+                    if (MyTasks.Where(x => x.Name == task.Name).FirstOrDefault() == null)
+                        MyTasks.Add(new MyTaskView(task.Name, task.Definition.RegistrationInfo.Description, task.Definition.Triggers[0].StartBoundary, task.LastTaskResult == 0 ? true : false, task.Enabled));
                 }
             }
         }
@@ -74,7 +68,7 @@ namespace Shutdowner
         /// <summary>
         /// Изменение статуса задачи
         /// </summary>
-        /// <param name="task"></param>
+        /// <param name="task">Задание</param>
         public void DisableTaskStatus(MyTaskView task)
         {
             using (TaskService ts = new TaskService())
